@@ -13,6 +13,7 @@
 			
 			.pullList {
 				min-height: 500px;
+				height: 100%;
 				position: relative;
 			}
 			
@@ -24,6 +25,7 @@
 			}
 			
 			.pullList .picBox .pic {
+				font-size: 0;
 				border: none;
 			}
 			
@@ -77,10 +79,11 @@
 			var opts = $.extend({
 					el: "",
 					colum: '4',
-					data: []
+					data: [],
+					horSpacing: 10
 				}, options || {}),
 				first = true,
-				listW = $("#" + opts.el).width(),
+				listW = $("#" + opts.el).width() - (opts.colum-1) * 10,
 				minH = 0,
 				topArr = [];
 			var a = {
@@ -91,6 +94,7 @@
 					} else {
 						this.setMoreData(data);
 					}
+					$("#" + opts.el).height(Math.max.apply(null, topArr))
 				},
 				setFirstData: function() {
 					var pDom = $("#" + opts.el);
@@ -115,18 +119,18 @@
 				resetPosition: function() {
 					$(".pullList .picBox").each(function(index) {
 						if(index < opts.colum) {
-							topArr[index] = $(this).height();
+							topArr[index] = ($(this).height() + opts.horSpacing);
 							$(this).css({
-								'top': 10,
-								'left': (listW / opts.colum + 10) * index
+								'top': opts.horSpacing,
+								'left': (listW / opts.colum + opts.horSpacing) * index
 							});
 						} else {
 							minH = Math.min.apply(null, topArr)
 							$(this).css({
-								'top': minH + 20,
-								'left': (listW / opts.colum + 10) * topArr.indexOf(minH)
+								'top': (minH + opts.horSpacing),
+								'left': (listW / opts.colum + opts.horSpacing) * topArr.indexOf(minH)
 							});
-							topArr[topArr.indexOf(minH)] += $(this).height();
+							topArr[topArr.indexOf(minH)] += ($(this).height() + opts.horSpacing);
 						}
 					})
 				},
@@ -145,8 +149,8 @@
 						minH = Math.min.apply(null, topArr)
 						picBox.css({
 							'opacity': 0.5,
-							'top': minH + 20,
-							'left': (listW / opts.colum + 10) * topArr.indexOf(minH)
+							'top': minH + opts.horSpacing,
+							'left': (listW / opts.colum + opts.horSpacing) * topArr.indexOf(minH)
 						})
 						img.attr('src', 'images/' + opts.data[i].src);
 						img.css({
@@ -156,7 +160,7 @@
 						picBox.stop().animate({
 							'opacity': 1
 						}, 1500)
-						topArr[topArr.indexOf(minH)] += (picBox.height() + 10);
+						topArr[topArr.indexOf(minH)] += (picBox.height() + opts.horSpacing);
 					}
 
 					lDom.append(picBox);
@@ -173,7 +177,7 @@
 			setTimeout(function() {
 				a.resetPosition();
 				$("#" + opts.el).height(Math.max.apply(null, topArr));
-			}, 50);
+			}, 60);
 
 			return a;
 		}
